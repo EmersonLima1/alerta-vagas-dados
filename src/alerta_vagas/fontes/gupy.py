@@ -1,14 +1,13 @@
-"""Fonte: API pública do portal de vagas da Gupy.
+"""Fonte: endpoint JSON do portal de vagas da Gupy (portal.gupy.io).
 
-A Gupy é a maior plataforma de recrutamento do Brasil e o portal
-(portal.gupy.io) consome uma API pública, sem autenticação, que lista
-vagas de todas as empresas. Usamos essa API em vez de raspar HTML:
-é mais estável, mais leve e não exige contornar nada.
-
-ATENÇÃO: a API não é documentada oficialmente. O formato abaixo é o
-observado publicamente; se a Gupy mudar algo, `normalizar` vai acusar
-erro e o workflow falha (você recebe e-mail do GitHub), em vez de
-silenciosamente parar de enviar vagas.
+A Gupy é a maior plataforma de recrutamento do Brasil. Ela NÃO oferece
+uma API oficial de busca de vagas para candidatos; usamos o mesmo
+endpoint JSON, sem autenticação, que o portal público chama no navegador.
+É mais leve que raspar HTML, mas é interno e não documentado: já mudou de
+endereço em out/2026 e pode mudar de novo. Por isso:
+- fazemos poucas requisições (uso pessoal, de hora em hora);
+- se o formato mudar, `normalizar` acusa erro e o workflow falha
+  (você recebe e-mail do GitHub), em vez de parar de enviar em silêncio.
 """
 
 from __future__ import annotations
@@ -24,7 +23,8 @@ from ..modelos import Vaga
 
 log = logging.getLogger(__name__)
 
-URL_API = "https://portal.api.gupy.io/api/v1/jobs"
+# Endpoint usado pelo portal desde out/2026 (o antigo passou a responder 404).
+URL_API = "https://portal.gupy.io/api/job-search/jobs"
 LIMITE_POR_PAGINA = 100
 MAX_PAGINAS = 5  # trava de segurança contra loop infinito de paginação
 TIMEOUT_S = 20

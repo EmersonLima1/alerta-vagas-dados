@@ -25,7 +25,7 @@ O objetivo é ser avisado rápido, só com vagas que realmente interessam.
 | Idade | Publicada há no máximo **7 dias** |
 | Repetição | Cada vaga é enviada uma única vez |
 | Frequência | De hora em hora, das 08h às 22h (Brasília) |
-| Fonte | Gupy (API pública do portal) |
+| Fonte | Gupy (endpoint JSON do portal público) |
 
 **Fora da v1 (ideias para versões futuras):** outras fontes (LinkedIn não tem
 API pública para isso; avaliar Programathor, Remotar e repositórios de vagas no
@@ -72,12 +72,15 @@ tests/               # pytest, sem acessar a internet
 
 ## Decisões técnicas
 
-**Fonte: API pública da Gupy, não scraping.** A Gupy concentra boa parte das
-vagas de empresas brasileiras e o próprio portal usa uma API JSON pública,
-sem login. Consumir JSON é mais estável e leve que raspar HTML e não exige
-contornar proteções. Risco: a API não é documentada oficialmente; por isso o
-código falha de forma explícita se o formato mudar, em vez de parar de
-enviar vagas em silêncio.
+**Fonte: endpoint JSON do portal da Gupy.** A Gupy concentra boa parte das
+vagas de empresas brasileiras. Ela não tem API oficial de busca para
+candidatos; o script usa o mesmo endpoint JSON, sem login, que o portal
+público chama no navegador (`portal.gupy.io/api/job-search/jobs`). É mais
+leve e estável que raspar HTML, mas é interno e não documentado: já mudou de
+endereço em outubro de 2026. Por isso o uso é pessoal e moderado (algumas
+requisições por hora) e o código falha de forma explícita se o formato
+mudar, em vez de parar de enviar vagas em silêncio. Alternativa oficial para
+uma v2: a API do Adzuna, que tem vagas do Brasil e exige cadastro gratuito.
 
 **WhatsApp: CallMeBot.** Comparação feita para uso pessoal:
 
