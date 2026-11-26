@@ -176,6 +176,35 @@ Resumo do filtro: {'cargo_fora_do_escopo': 180, 'aceita': 12, 'nivel_senior_nao_
 Confira se as vagas aceitas fazem sentido. Depois rode de novo desmarcando a
 opção para testar o envio real. A partir daí o agendamento assume.
 
+### 4. Agendamento externo (cron-job.org)
+
+Neste repositório o `schedule` do GitHub Actions não disparou nenhuma vez
+(26/11/2026), embora a execução manual funcione. É um problema conhecido em
+contas e repositórios novos. A solução é um agendador externo chamar o
+workflow pela API do GitHub (`workflow_dispatch`) de hora em hora. O
+`schedule` continua no workflow como reserva: se ele voltar a funcionar, a
+trava de `concurrency` e o arquivo de estado impedem envio duplicado.
+
+1. **Token do GitHub:** Settings → Developer settings → Personal access tokens →
+   Fine-grained tokens → Generate new token. Repository access: *Only select
+   repositories* → `alerta-vagas-dados`. Permissions → Repository → **Actions:
+   Read and write** (nada mais). Expiração: 1 ano (anote a data para renovar).
+2. **cron-job.org:** crie a conta e um novo cronjob com:
+   - URL: `https://api.github.com/repos/EmersonLima1/alerta-vagas-dados/actions/workflows/alerta-vagas.yml/dispatches`
+   - Schedule: personalizado, minuto `17`, horas `8-22`, fuso `America/Sao_Paulo`
+   - Advanced → Request method: `POST`
+   - Headers:
+     - `Authorization: Bearer <SEU_TOKEN>`
+     - `Accept: application/vnd.github+json`
+     - `X-GitHub-Api-Version: 2022-11-28`
+     - `Content-Type: application/json`
+   - Request body: `{"ref":"main","inputs":{"dry_run":"false"}}`
+3. Use **Test run** no cron-job.org: a resposta esperada é HTTP **204**, e uma
+   execução nova aparece na aba Actions.
+
+O `"dry_run":"false"` é necessário porque, na execução manual, o modo teste
+vem marcado por padrão.
+
 ## Rodando localmente
 
 ```bash
@@ -198,7 +227,7 @@ dos secrets (`TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`, por exemplo).
 - [x] Execução real na Gupy (dry-run no Actions, 26/11/2026). Achou e corrigiu:
       endereço novo da API e rótulo de nível na mensagem.
 - [x] Primeiro envio real pelo Telegram (26/11/2026, mensagem recebida)
-- [ ] Execuções agendadas disparando sozinhas
+- [ ] Execuções de hora em hora via cron-job.org (o `schedule` nativo não disparou)
 - [ ] Uma semana rodando: conferir falsos positivos/negativos e ajustar `config.py`
 
 ## Limitações conhecidas
