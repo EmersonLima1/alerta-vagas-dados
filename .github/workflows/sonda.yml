@@ -1,0 +1,27 @@
+name: Sonda Gupy (temporario)
+on: push
+jobs:
+  sonda:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for u in \
+            "https://portal.api.gupy.io/api/job?name=analista%20de%20dados&limit=2&offset=0" \
+            "https://portal.api.gupy.io/api/job?name=analista%20de%20dados&workplaceType=remote&limit=2&offset=0" \
+            "https://portal.api.gupy.io/api/v1/jobs?name=analista%20de%20dados&limit=2" \
+            "https://employability-portal.gupy.io/api/v1/jobs?jobName=analista%20de%20dados&workplaceType=remote&limit=2&offset=0" ; do
+            echo "=== $u"
+            curl -s -m 20 -o out.json -w "HTTP %{http_code}\n" "$u"
+            python3 -c "
+          import json
+          try:
+              d=json.load(open('out.json'))
+          except Exception as e:
+              print('nao-json', open('out.json').read()[:300]); raise SystemExit
+          print('chaves:', list(d) if isinstance(d,dict) else type(d))
+          print('pagination:', d.get('pagination') if isinstance(d,dict) else None)
+          for j in (d.get('data') or [])[:2]:
+              j=dict(j); j['description']=str(j.get('description',''))[:60]
+              print(json.dumps(j, ensure_ascii=False))
+          "
+          done
