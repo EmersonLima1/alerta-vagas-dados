@@ -227,7 +227,7 @@ dos secrets (`TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`, por exemplo).
 - [x] Execução real na Gupy (dry-run no Actions, 26/11/2026). Achou e corrigiu:
       endereço novo da API e rótulo de nível na mensagem.
 - [x] Primeiro envio real pelo Telegram (26/11/2026, mensagem recebida)
-- [ ] Execuções de hora em hora via cron-job.org (o `schedule` nativo não disparou)
+- [x] Execuções de hora em hora via cron-job.org (1ª automática em 26/11/2026 15h; o `schedule` nativo não disparou)
 - [ ] Uma semana rodando: conferir falsos positivos/negativos e ajustar `config.py`
 
 ## Limitações conhecidas
