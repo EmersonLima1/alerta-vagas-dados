@@ -7,6 +7,7 @@ on:
     # Minuto 17 de cada hora, das 08h às 22h de Brasília
     # (11h-23h UTC e 00h-01h UTC). Evitamos o minuto 0 porque é o
     # horário de pico do GitHub e os atrasos são maiores.
+    # Obs.: agendamentos só disparam a partir do branch padrão (main).
     - cron: "17 0,1,11-23 * * *"
   # Permite rodar manualmente pela aba Actions (ótimo para testar).
   workflow_dispatch:
