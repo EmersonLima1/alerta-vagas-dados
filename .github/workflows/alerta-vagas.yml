@@ -50,6 +50,11 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           WHATSAPP_PHONE: ${{ secrets.WHATSAPP_PHONE }}
           CALLMEBOT_APIKEY: ${{ secrets.CALLMEBOT_APIKEY }}
+          # Ajustes opcionais sem mexer no código: Settings → Secrets and
+          # variables → Actions → aba Variables. Vazio = usa o padrão do config.py.
+          MAX_DIAS: ${{ vars.MAX_DIAS }}
+          ACEITAR_NIVEL_NAO_INFORMADO: ${{ vars.ACEITAR_NIVEL_NAO_INFORMADO }}
+          MAX_VAGAS_POR_EXECUCAO: ${{ vars.MAX_VAGAS_POR_EXECUCAO }}
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             python -m alerta_vagas --dry-run

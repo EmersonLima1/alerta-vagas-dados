@@ -7,6 +7,8 @@ as novidades para o meu celular (Telegram, ou WhatsApp via CallMeBot), sem repet
 > **Status:** v1 funcionando. 60 testes automatizados; busca real na Gupy e
 > envio real pelo Telegram validados em 26/11/2026 (veja [Validação](#validação)).
 
+> 📘 **Quer entender o código ou adaptar para outras vagas?** Veja [docs/COMO_FUNCIONA.md](docs/COMO_FUNCIONA.md).
+
 ## Problema
 
 Procurar vagas manualmente todo dia em vários sites é repetitivo e fácil de

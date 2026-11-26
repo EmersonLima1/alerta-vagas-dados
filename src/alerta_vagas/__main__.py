@@ -3,7 +3,7 @@
 Fluxo (um mini ETL):
   1. Extrair  - buscar vagas nas fontes
   2. Transformar - filtrar (remota, Brasil, recente, cargo, nível) e remover já enviadas
-  3. Carregar - enviar pelo WhatsApp e registrar no estado o que foi enviado
+  3. Carregar - enviar (Telegram ou WhatsApp) e registrar no estado o que foi enviado
 """
 
 from __future__ import annotations
