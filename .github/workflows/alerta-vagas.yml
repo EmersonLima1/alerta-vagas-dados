@@ -1,4 +1,4 @@
-# Busca vagas e envia para o WhatsApp em horários agendados.
+# Busca vagas e envia para o Telegram/WhatsApp em horários agendados.
 name: Alerta de vagas
 
 on:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Só mostrar no log, sem enviar WhatsApp"
+        description: "Só mostrar no log, sem enviar mensagem"
         type: boolean
         default: true
 
@@ -44,6 +44,9 @@ jobs:
       - name: Buscar vagas e enviar
         env:
           PYTHONPATH: src
+          # Defina os secrets de UM canal. Se os do Telegram existirem, ele é usado.
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           WHATSAPP_PHONE: ${{ secrets.WHATSAPP_PHONE }}
           CALLMEBOT_APIKEY: ${{ secrets.CALLMEBOT_APIKEY }}
         run: |

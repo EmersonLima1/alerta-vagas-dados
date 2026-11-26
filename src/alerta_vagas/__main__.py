@@ -18,7 +18,7 @@ from . import estado as estado_mod
 from .config import Config
 from .filtros import avaliar
 from .fontes import gupy
-from .notificador import CallMeBot, Console, ErroEnvio, Notificador, montar_mensagens, texto_do_grupo
+from .notificador import Console, do_ambiente as notificador_do_ambiente, ErroEnvio, Notificador, montar_mensagens, texto_do_grupo
 
 log = logging.getLogger("alerta_vagas")
 
@@ -72,14 +72,14 @@ def executar(cfg: Config, notificador: Notificador, buscar=gupy.buscar, agora: d
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Busca vagas remotas de dados e envia pelo WhatsApp")
+    parser = argparse.ArgumentParser(description="Busca vagas remotas de dados e envia pelo Telegram ou WhatsApp")
     parser.add_argument("--dry-run", action="store_true", help="imprime as mensagens em vez de enviar e não altera o estado")
     args = parser.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     cfg = Config.do_ambiente()
     try:
-        notificador: Notificador = Console() if args.dry_run else CallMeBot.do_ambiente()
+        notificador: Notificador = Console() if args.dry_run else notificador_do_ambiente()
         executar(cfg, notificador)
     except (gupy.ErroFonte, ErroEnvio) as e:
         # Código de saída != 0 faz o GitHub Actions marcar a execução como falha
