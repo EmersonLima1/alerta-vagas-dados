@@ -4,9 +4,8 @@ Automação em Python, agendada no **GitHub Actions**, que busca vagas
 **remotas no Brasil** na área de dados, filtra por cargo e nível e envia
 as novidades para o meu celular (Telegram, ou WhatsApp via CallMeBot), sem repetir vagas e sem vagas antigas.
 
-> **Status:** v1 em validação. Lógica coberta por 60 testes automatizados;
-> busca real na Gupy validada no Actions. Falta validar o primeiro envio real
-> (veja [Validação](#validação)).
+> **Status:** v1 funcionando. 60 testes automatizados; busca real na Gupy e
+> envio real pelo Telegram validados em 26/11/2026 (veja [Validação](#validação)).
 
 ## Problema
 
@@ -198,7 +197,8 @@ dos secrets (`TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`, por exemplo).
       escolha do canal pelos secrets, token/apikey nunca aparecem em erro.
 - [x] Execução real na Gupy (dry-run no Actions, 26/11/2026). Achou e corrigiu:
       endereço novo da API e rótulo de nível na mensagem.
-- [ ] Primeiro envio real pelo Telegram
+- [x] Primeiro envio real pelo Telegram (26/11/2026, mensagem recebida)
+- [ ] Execuções agendadas disparando sozinhas
 - [ ] Uma semana rodando: conferir falsos positivos/negativos e ajustar `config.py`
 
 ## Limitações conhecidas
