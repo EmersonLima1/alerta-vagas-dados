@@ -32,9 +32,10 @@ def test_buscar_pagina_e_remove_duplicadas(monkeypatch):
     def falso_get(url, params):
         chamadas.append(params)
         if params["jobName"] == "a":
-            paginas = {0: [item(1), item(2)], 2: [item(3)]}
-            return {"data": paginas[params["offset"]]}
-        return {"data": [item(1)]}  # mesma vaga aparece em outro termo
+            todas = [item(1), item(2), item(3)]
+            o = params["offset"]
+            return {"data": todas[o:o + 2], "pagination": {"total": 3}}
+        return {"data": [item(1)], "pagination": {"total": 1}}  # mesma vaga em outro termo
 
     vagas = gupy.buscar(["a", "b"], get_json=falso_get)
     assert sorted(v.id_fonte for v in vagas) == ["1", "2", "3"]
@@ -57,3 +58,15 @@ def test_todos_os_termos_falhando_gera_erro():
 
     with pytest.raises(gupy.ErroFonte):
         gupy.buscar(["a", "b"], get_json=falso_get)
+
+
+def test_pagina_menor_que_o_limite_continua_pelo_total(monkeypatch):
+    # A API real devolve menos itens que o `limit` pedido (bug achado na 1ª execução real).
+    monkeypatch.setattr(gupy, "LIMITE_POR_PAGINA", 100)
+
+    def falso_get(url, params):
+        inicio = params["offset"]
+        ids = range(inicio, min(inicio + 10, 25))
+        return {"data": [item(i) for i in ids], "pagination": {"total": 25}}
+
+    assert len(gupy.buscar(["a"], get_json=falso_get)) == 25

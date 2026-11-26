@@ -77,7 +77,7 @@ class Console:
 def formatar_vaga(vaga: Vaga, motivo: str) -> str:
     data = vaga.publicada_em.strftime("%d/%m") if vaga.publicada_em else "?"
     nivel = motivo.split("/", 1)[1] if "/" in motivo else ""
-    nivel_txt = {"junior": "Jr", "pleno": "Pleno", "nao_informado": "nível não informado"}.get(nivel, nivel)
+    nivel_txt = {"junior": "Jr", "pleno": "Pleno", "nivel_nao_informado": "nível não informado"}.get(nivel, nivel)
     empresa = f" — {vaga.empresa}" if vaga.empresa else ""
     return f"• *{vaga.titulo}*{empresa}\n  {nivel_txt} · publicada {data}\n  {vaga.url}"
 

@@ -66,7 +66,8 @@ def executar(cfg: Config, notificador: Notificador, buscar=gupy.buscar, agora: d
         # para não repetir essas vagas na próxima execução.
         if not isinstance(notificador, Console):
             estado_mod.salvar(estado, cfg.caminho_estado)
-    log.info("%d vagas enviadas em %d mensagens", enviadas, len(grupos))
+    modo = " (dry-run, nada foi enviado)" if isinstance(notificador, Console) else ""
+    log.info("%d vagas em %d mensagens%s", enviadas, len(grupos), modo)
     return enviadas
 
 

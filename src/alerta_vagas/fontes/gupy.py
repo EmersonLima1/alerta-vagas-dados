@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 # Endpoint usado pelo portal desde out/2026 (o antigo passou a responder 404).
 URL_API = "https://portal.gupy.io/api/job-search/jobs"
 LIMITE_POR_PAGINA = 100
-MAX_PAGINAS = 5  # trava de segurança contra loop infinito de paginação
+MAX_PAGINAS = 10  # trava de segurança contra loop infinito de paginação
 TIMEOUT_S = 20
 TENTATIVAS = 3
 
@@ -98,12 +98,13 @@ def buscar(termos: Iterable[str], get_json: Buscador = _get_json) -> list[Vaga]:
     termos = list(termos)
     for termo in termos:
         try:
-            for pagina in range(MAX_PAGINAS):
+            offset = 0
+            for _ in range(MAX_PAGINAS):
                 params = {
                     "jobName": termo,
                     "workplaceType": "remote",
                     "limit": LIMITE_POR_PAGINA,
-                    "offset": pagina * LIMITE_POR_PAGINA,
+                    "offset": offset,
                 }
                 dados = get_json(URL_API, params)
                 itens = dados.get("data")
@@ -112,8 +113,15 @@ def buscar(termos: Iterable[str], get_json: Buscador = _get_json) -> list[Vaga]:
                 for item in itens:
                     vaga = normalizar(item)
                     vistas.setdefault(vaga.chave, vaga)
-                if len(itens) < LIMITE_POR_PAGINA:
+                # A API pode devolver menos itens que o `limit` pedido (ela tem
+                # um teto próprio por página). Por isso avançamos pelo número de
+                # itens recebidos e paramos pelo `total` da paginação, não por
+                # "veio menos que o limite".
+                offset += len(itens)
+                total = (dados.get("pagination") or {}).get("total")
+                if not itens or (isinstance(total, int) and offset >= total):
                     break
+            log.info("Gupy: termo %r -> %d vagas lidas (total informado: %s)", termo, offset, total)
         except (ErroFonte, KeyError, TypeError, ValueError) as e:
             # Um termo com problema não derruba os outros...
             erros += 1

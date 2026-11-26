@@ -35,3 +35,13 @@ def test_erro_de_rede_nao_vaza_apikey(monkeypatch):
     with pytest.raises(ErroEnvio) as e:
         CallMeBot("+5577999999999", "SEGREDO", pausa_s=0).enviar("oi")
     assert "SEGREDO" not in str(e.value)
+
+
+def test_formatacao_do_nivel():
+    from datetime import datetime, timezone
+    from alerta_vagas.modelos import Vaga
+    from alerta_vagas.notificador import formatar_vaga
+
+    v = Vaga("gupy", "1", "Cientista de Dados", "ACME", "u", datetime(2026, 11, 23, tzinfo=timezone.utc), True, "")
+    assert "nível não informado" in formatar_vaga(v, "Cientista de Dados/nivel_nao_informado")
+    assert "Jr" in formatar_vaga(v, "Cientista de Dados/junior")
