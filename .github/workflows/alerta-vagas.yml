@@ -1,0 +1,69 @@
+# Busca vagas e envia para o WhatsApp em horários agendados.
+name: Alerta de vagas
+
+on:
+  schedule:
+    # Cron do GitHub é sempre em UTC. Brasília = UTC-3.
+    # Minuto 17 de cada hora, das 08h às 22h de Brasília
+    # (11h-23h UTC e 00h-01h UTC). Evitamos o minuto 0 porque é o
+    # horário de pico do GitHub e os atrasos são maiores.
+    - cron: "17 0,1,11-23 * * *"
+  # Permite rodar manualmente pela aba Actions (ótimo para testar).
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Só mostrar no log, sem enviar WhatsApp"
+        type: boolean
+        default: true
+
+# O workflow precisa escrever no repo para salvar data/vagas_enviadas.json.
+permissions:
+  contents: write
+
+# Nunca rodar duas execuções ao mesmo tempo (evita mensagens duplicadas
+# e conflito ao salvar o estado).
+concurrency:
+  group: alerta-vagas
+  cancel-in-progress: false
+
+jobs:
+  buscar-e-enviar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Buscar vagas e enviar
+        env:
+          PYTHONPATH: src
+          WHATSAPP_PHONE: ${{ secrets.WHATSAPP_PHONE }}
+          CALLMEBOT_APIKEY: ${{ secrets.CALLMEBOT_APIKEY }}
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            python -m alerta_vagas --dry-run
+          else
+            python -m alerta_vagas
+          fi
+
+      # Roda mesmo se o passo anterior falhar no meio, para não perder o
+      # registro das vagas que já foram enviadas.
+      - name: Salvar vagas enviadas no repositório
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/vagas_enviadas.json
+          if git diff --cached --quiet; then
+            echo "Estado sem mudanças."
+          else
+            git commit -m "chore: atualiza vagas enviadas [skip ci]"
+            git push
+          fi
